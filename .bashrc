@@ -116,15 +116,51 @@ if ! shopt -oq posix; then
   fi
 fi
 
+
+#git prompt
+source ~/.config/git-prompt.sh
+PS1='\[\e[0;33m\]\w\[\e[0m\]\[\e[32m\]$(__git_ps1 "[%s]")\[\e[0m\]$ '
+
+# Alon - old version
+# added by Anaconda3 5.3.1 installer
+# >>> conda init >>>
+# !! Contents within this block are managed by 'conda init' !!
+#__conda_setup="$(CONDA_REPORT_ERRORS=false '/home/hershen/anaconda3/bin/conda' shell.bash hook 2> /dev/null)"
+#if [ $? -eq 0 ]; then
+#    \eval "$__conda_setup"
+#else
+#    if [ -f "/home/hershen/anaconda3/etc/profile.d/conda.sh" ]; then
+## . "/home/hershen/anaconda3/etc/profile.d/conda.sh"  # commented out by conda initialize
+#        CONDA_CHANGEPS1=false conda activate base
+#    else
+#        \export PATH="/home/hershen/anaconda3/bin:$PATH"
+#    fi
+#fi
+#unset __conda_setup
+# <<< conda init <<<
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/hershen/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/hershen/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/home/hershen/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/hershen/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+## <<< conda initialize <<<
+
+#My additions
 #rootana
 export ROOTANASYS=/home/hershen/rootana
 export LD_LIBRARY_PATH=${ROOTANASYS}/lib:$LD_LIBRARY_PATH
-
+ 
 #catch2 - unit tests
 export CPLUS_INCLUDE_PATH=/home/hershen/Catch2/single_include:$CPLUS_INCLUDE_PATH
-
-#VMC
-export NO_G3TOG4=1
 
 #Shared library path
 export LD_LIBRARY_PATH=/home/hershen/PhD/Root/commonRootFunctions/lib:$LD_LIBRARY_PATH
@@ -134,7 +170,7 @@ export LIBRARY_PATH=/home/hershen/PhD/Root/commonRootFunctions/lib:$LIBRARY_PATH
 # export PYTHONSTARTUP=~/.pystartup
 
 #set python path
-export PYTHONPATH=${PYTHONPATH}:/home/hershen/PhD/Root/commonPythonFunctions:/home/hershen/PhD/python:/home/hershen/PhD/Root/commonRootFunctions/pythonBindings/lib
+export PYTHONPATH=${PYTHONPATH}:/home/hershen/PhD/python:/home/hershen/PhD/Root/commonRootFunctions/pythonBindings/lib:/home/hershen/PhD/Root/commonPythonFunctions
 
 alias clumeqConnect='ssh guillimin6.hpc.mcgill.ca'
 alias clumeqMount="sshfs hershen@guillimin.hpc.mcgill.ca:/home/hershen ~/clumeqMount -oauto_cache,reconnect" #,defer_permissions
@@ -146,88 +182,17 @@ alias desy='ssh naf-belle11.desy.de'
 alias daq10='ssh belle2@daq10.triumf.ca'
 alias desyMount="sshfs hershen@naf-belle11.desy.de:/afs/desy.de/user/h/hershen ~/desyMount -oauto_cache,reconnect" #,defer_permissions
 alias desyUnmount="fusermount -u /home/hershen/desyMount"
+alias rhelMount="sshfs hershen@rhel6-64j.slac.stanford.edu:/nfs/farm/babar/AWG86/DarkForce/hershen ~/rhelMount -oauto_cache,reconnect" #,defer_permissions
+alias rhelUnmount="fusermount -u /home/hershen/rhelMount"
 alias ltdaMount="sshfs hershen@bbrltda03.slac.stanford.edu:/awg/tauqed/hershen ~/tauqed -oauto_cache,reconnect"
 alias ltdaUnmount="fusermount -u /home/hershen/tauqed"
 alias seagateRemount="sudo mount -o remount,ro /dev/sdb1 /media/hershen/Seagate/"
 alias webstorm="/home/hershen/WebStorm/WebStorm-173.4127.31/bin/webstorm.sh &"
-alias ltda="ssh bbrltda.slac.stanford.edu"
-alias rhel="ssh rhel6-64j.slac.stanford.edu"
+alias ltda="ssh bbrltda03.slac.stanford.edu"
+alias rhel="ssh rhel-for-jupyter"
 
 #setup root
-# source ~/root/root-6.06.06/bin/thisroot.sh
-
-function basf2Setup()
-{
-  pushd .
-  alias python='python2'
-  cd /home/hershen/basf2/release
-  source ../tools/b2setup
-  unalias python
-  popd
-  export PYTHONPATH=$PYTHONPATH:/home/hershen/PhD/python:/home/hershen/PhD/Root/commonRootFunctions/pythonBindings/lib
-}
-export -f basf2Setup
-
-
-function myScons()
-{
-  local returnVal="scons $1"
-  if [[ "$returnVal" ]]; then
-    scons -Q
-  fi
-}
-
-function killMouse()
-{
-  ps axjf | grep drag
-}
-
-function myRsync()
-{
-  #a - archive mode
-  #v - verbose
-  #z - use compression while transfering
-  #P - don't delete partial files if interupted (faster transfer if resumed) + display progress.
-  echo rsync''ing from $1 to $2
-	rsync -avzP $1 $2
-
-}
-
-# added by Anaconda3 4.1.1 installer
-# export PATH="/home/hershen/anaconda3/bin:$PATH"
-
-#Add webstrom to path
-
-#Auto commit tiddly notebook on write - Doesn't work because windows shared folder doesn't trigger events.
-# nohup inotifywait -q -m -e modify /home/hershen/PhD/tiddly/notebook.html | cd /home/hershen/PhD/tiddly; git add notebook.html; git commit -m 'autocommit on change'  &
-export PATH="/home/hershen/WebStorm/bin:$PATH"
-#use clang static analyzer:
-function cm() {
-  scan-build -o clangCheckOutput make
-}
-
-#colorful GCC outputs
-# export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-
-
-function geant4Local() {
-	basf2Setup
-  source /home/hershen/geant4/geant4.10.3-install/bin/geant4.sh
-#   source /home/hershen/basf2/externals/v01-04-01/Linux_x86_64/opt/root/bin/thisroot.sh
-}
-
-#create symbolic link to external Seagate with testbeam data
-ln -s /media/hershen/Seagate/beamTest2015/originalMidasFiles/ /home/hershen/Seagate
-
-#set directory colors for shared foladers
-LS_COLORS=$LS_COLORS:'ow=1;34:tw=1;34:' ; export LS_COLORS
-
-# added by Anaconda3 installer
-export PATH="$PATH:/home/hershen/anaconda3/bin"
-
-#kill plasmashell
-alias killPlasma="killall plasmashell; kstart plasmashell --shut-up; exit"
-
+# source /home/hershen/anaconda3/envs/myenv/bin/thisroot.sh
 
 #jupyter notebook strip - makes it git friendly (http://timstaley.co.uk/posts/making-git-and-jupyter-notebooks-play-nice/)
 alias nbstrip_jq="jq --indent 1 \
@@ -238,8 +203,27 @@ alias nbstrip_jq="jq --indent 1 \
 #Run nbstrip_jq on all jupyter notebooks
 function nbstrip_all {
     for nbfile in *.ipynb; do
-	echo "Processing $nbfile"
+      echo "Processing $nbfile"
         echo "$(nbstrip_jq $nbfile)" > $nbfile
     done
     unset nbfile
 }
+
+
+
+#activate conda enviourment
+conda activate myenv
+
+#make touchpad scrolling less sensitive. Higher numbers mean LESS sensitive.
+synclient VertScrollDelta=50
+
+#Set vi mode in bash
+set -o vi
+
+#neovim alias
+alias vim=nvim
+alias vi=nvim
+
+#Jaxodraw
+export TEXINPUTS=$TEXINPUTS:$HOME/jaxodraw/jaxodraw-2.1-0//:
+
