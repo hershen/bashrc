@@ -188,7 +188,7 @@ alias ltdaMount="sshfs hershen@bbrltda03.slac.stanford.edu:/awg/tauqed/hershen ~
 alias ltdaUnmount="fusermount -u /home/hershen/tauqed"
 alias seagateRemount="sudo mount -o remount,ro /dev/sdb1 /media/hershen/Seagate/"
 alias webstorm="/home/hershen/WebStorm/WebStorm-173.4127.31/bin/webstorm.sh &"
-alias ltda="ssh bbrltda03.slac.stanford.edu"
+alias ltda="ssh ltda-for-jupyter"
 alias rhel="ssh rhel-for-jupyter"
 
 #setup root
@@ -227,3 +227,5 @@ alias vi=nvim
 #Jaxodraw
 export TEXINPUTS=$TEXINPUTS:$HOME/jaxodraw/jaxodraw-2.1-0//:
 
+#Set caps lock to be an esc key
+setxkbmap -option caps:escape
